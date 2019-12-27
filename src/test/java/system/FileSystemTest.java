@@ -41,8 +41,8 @@ public class FileSystemTest {
     //Deleting a directory which is not empty
     @Test(expected = DirectoryNotEmptyException.class)
     public void testrmdir1() throws Exception {
-        String[] dir = {"root", "dumb"};
-        String[] file1 = {"root", "dumb", "file1"};
+        String[] dir = {"root", "bgu"};
+        String[] file1 = {"root", "bgu", "file1"};
         fs.dir(dir);
         fs.file(file1, 1);
         fs.rmdir(dir);
@@ -50,8 +50,8 @@ public class FileSystemTest {
 
     @Test
     public void testrmdir2() {
-        String[] dir = {"root", "dumb", "dumb2"};
-        String[] file1 = {"root", "dumb", "file1"};
+        String[] dir = {"root", "dor", "serfati"};
+        String[] file1 = {"root", "dor", "file1"};
         try {
             fs.dir(dir);
             fs.file(file1, 1);
@@ -67,8 +67,8 @@ public class FileSystemTest {
     @Test
     public void testrmfile() {
         try {
-            String[] file1 = {"root", "dumb", "file1"};
-            String[] file2 = {"root", "dumb", "file2"};
+            String[] file1 = {"root", "dor", "file1"};
+            String[] file2 = {"root", "dor", "file2"};
             fs.file(file1, 6);
             fs.file(file2, 3);
             fs.rmfile(file1);
@@ -90,15 +90,15 @@ public class FileSystemTest {
     //Checks main functionality :
     @Test
     public void testdir4() {
-        String[] dir1 = {"root", "aviv", "bc"};
+        String[] dir1 = {"root", "serfati", "dor"};
         try {
             fs.dir(dir1);
         } catch(Exception e) {
             fail();
         }
         Tree res = fs.DirExists(dir1);
-        assertEquals(res.name, "bc");
-        assertEquals(res.parent.name, "aviv");
+        assertEquals(res.name, "dor");
+        assertEquals(res.parent.name, "serfati");
         assertEquals(res.parent.parent.name, "root");
     }
 
@@ -124,7 +124,7 @@ public class FileSystemTest {
             fs2.dir(file);
             fs2.file(file, original);
             fail();
-        } catch(Exception e) {
+        } catch(BadFileNameException | OutOfSpaceException e) {
         }
     }
 
@@ -133,7 +133,6 @@ public class FileSystemTest {
         try {
             fs2.file(new String[]{null}, 10);
         } catch(BadFileNameException | OutOfSpaceException e) {
-            e.printStackTrace();
         }
         try {
             FileSystem fileSystem2 = new FileSystem(50) {
@@ -179,7 +178,7 @@ public class FileSystemTest {
     //Simply adding a file :
     @Test
     public void testFile3() {
-        String[] path = {"root", "av"};
+        String[] path = {"root", "dor"};
         try {
             fs.file(path, 6);
         } catch(Exception e) {
@@ -188,7 +187,7 @@ public class FileSystemTest {
         assertEquals(FileSystem.fileStorage.countFreeSpace(), 94);
         try {
             Leaf child = fs.FileExists(path);
-            assertEquals(child.name, "av");
+            assertEquals(child.name, "dor");
             assertEquals(child.parent.parent.name, "root");
         } catch(Exception e) {
             fail();
@@ -199,14 +198,14 @@ public class FileSystemTest {
     @Test
     public void tesdtlsdir2() {
         Assert.assertNull(fs.lsdir(new String[]{"nonExistingDir"}));
-        String[] file1 = {"root", "what", "file1"};
-        String[] file2 = {"root", "what", "file2"};
+        String[] file1 = {"root", "dor", "file1"};
+        String[] file2 = {"root", "dor", "file2"};
         String[] expected = {"file1", "file2"};
         try {
-            fs.dir(new String[]{"root", "what"});
+            fs.dir(new String[]{"root", "dor"});
             fs.file(file1, 3);
             fs.file(file2, 3);
-            assertArrayEquals(fs.lsdir(new String[]{"root", "what"}), expected);
+            assertArrayEquals(fs.lsdir(new String[]{"root", "dor"}), expected);
         } catch(Exception e) {
             fail();
         }
