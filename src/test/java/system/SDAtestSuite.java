@@ -13,7 +13,6 @@ import java.util.Scanner;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        NodeTest.class,
         LeafTest.class,
         TreeTest.class,
         SpaceTest.class,
@@ -21,8 +20,6 @@ import java.util.Scanner;
 })
 
 public class SDAtestSuite {
-
-
     public static void main(String[] args) {
         final int memorySize = 10240;
         ArrayList<String> prompt = new ArrayList<>();

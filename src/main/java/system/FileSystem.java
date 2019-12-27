@@ -110,6 +110,7 @@ public class FileSystem {
 
         }
 
+
         if (k > FileSystem.fileStorage.countFreeSpace()) { //not enough space free
 
             Leaf file = FileExists(name);
@@ -150,9 +151,7 @@ public class FileSystem {
         Leaf newLeaf = new Leaf(fileName, k);
         newLeaf.parent = workingTree;
         newLeaf.depth = newLeaf.parent.depth+1;
-
         workingTree.children.put(fileName, newLeaf);
-
     }
 
     /**

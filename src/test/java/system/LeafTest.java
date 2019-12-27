@@ -34,7 +34,6 @@ public class LeafTest {
 
     @Test
     public void LeafInitWorks() {
-
         assertEquals(newLeaf.getClass(), anotherLeaf.getClass());
     }
 
@@ -46,7 +45,6 @@ public class LeafTest {
 
     @Test
     public void testIsLeaf() throws OutOfSpaceException {
-
         Leaf instance = new Leaf("a", 10);
         assertEquals(instance.getClass(), Leaf.class);
     }

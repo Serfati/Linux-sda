@@ -18,7 +18,6 @@ public class NodeTest {
         child2 = new Tree("right");
         child1.parent = tree;
         child1.depth = 1;
-
         child2.parent = child1;
         child2.depth = 2;
     }
