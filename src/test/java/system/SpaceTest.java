@@ -6,7 +6,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class SpaceTest {
     final int size = 10;
@@ -16,31 +17,23 @@ public class SpaceTest {
 
     @Before
     public void setUp() {
-
         newSpace = new Space(100);
         anotherSpace = new Space(200);
         fs = new FileSystem(size);
         assertEquals(FileSystem.fileStorage.countFreeSpace(), size);
     }
 
-
     @Test
-    public void testAlloc1() {
+    public void testAllocs() {
         try {
-            Leaf leaf1 = new Leaf("testLeaf", 5);
-            assertEquals(5, FileSystem.fileStorage.countFreeSpace());
-            assertEquals(leaf1.allocations.length, 5);
-        } catch(Exception e) {
-            fail();
-        }
-
-    }
-
-    @Test
-    public void testAlloc3() {
-        try {
-            Leaf leaf1 = new Leaf("testLeaf", 5);
-            int[] allocs = leaf1.allocations;
+            Leaf newNode = new Leaf("testLeaf", 5);
+            int[] allocs = newNode.allocations;
+            try {
+                assertEquals(5, FileSystem.fileStorage.countFreeSpace());
+                assertEquals(newNode.allocations.length, 5);
+            } catch(Exception e) {
+                fail();
+            }
             assertEquals(allocs[0], 0);
             assertEquals(allocs[1], 1);
             assertEquals(allocs[2], 2);
@@ -49,71 +42,33 @@ public class SpaceTest {
         } catch(Exception e) {
             fail();
         }
-
     }
 
     @Test
-    public void testAlloc4() {
+    public void testBlocks() {
         try {
-            Leaf leaf1 = new Leaf("testLeaf", 5);
+            Leaf newNode = new Leaf("testLeaf", 5);
             Leaf[] blocks = FileSystem.fileStorage.getAlloc();
-            assertEquals(blocks[0], leaf1);
-            assertEquals(blocks[1], leaf1);
-            assertEquals(blocks[2], leaf1);
-            assertEquals(blocks[3], leaf1);
-            assertEquals(blocks[4], leaf1);
+            assertEquals(blocks[0], newNode);
+            assertEquals(blocks[1], newNode);
+            assertEquals(blocks[2], newNode);
+            assertEquals(blocks[3], newNode);
+            assertEquals(blocks[4], newNode);
         } catch(Exception e) {
             fail();
         }
     }
 
-    //--------------------------------------------------
-
-    @Test(expected = NullPointerException.class)
-    public void testAlloc6() throws Exception {
-        new Leaf("testLeaf", 11);
-        fail();
-    }
-
+    //--------------------------------------------------//
     @Test
-    public void testDeAlloc1() {
+    public void testDeAllocs() {
         try {
             Tree parent = new Tree("root");
             Leaf leaf = new Leaf("testLeaf", 4);
             parent.children.put(parent.name, leaf);
             leaf.parent = parent;
             FileSystem.fileStorage.Dealloc(leaf);
-            Leaf[] array = FileSystem.fileStorage.getAlloc();
-            Arrays.stream(array, 0, 4).forEachOrdered(Assert::assertNull);
-        } catch(Exception e) {
-            fail();
-        }
-    }
-
-
-    @Test
-    public void testDeAlloc2() {
-        try {
-            Tree parent = new Tree("root");
-            Leaf leaf = new Leaf("testLeaf", 4);
-            parent.children.put(parent.name, leaf);
-            leaf.parent = parent;
-            FileSystem.fileStorage.Dealloc(leaf);
-            assertEquals(10, FileSystem.fileStorage.countFreeSpace());
-        } catch(Exception e) {
-            fail();
-        }
-    }
-
-    @Test
-    public void testDeAlloc3() {
-        try {
-            Tree parent = new Tree("root");
-            Leaf leaf = new Leaf("testLeaf", 4);
-            parent.children.put(parent.name, leaf);
-            leaf.parent = parent;
-            FileSystem.fileStorage.Dealloc(leaf);
-            assertFalse(parent.children.containsKey(leaf.name));
+            Arrays.stream(FileSystem.fileStorage.getAlloc(), 0, 4).forEachOrdered(Assert::assertNull);
         } catch(Exception e) {
             fail();
         }

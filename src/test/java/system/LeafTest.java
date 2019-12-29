@@ -12,7 +12,6 @@ public class LeafTest {
     static int numberOfTest = 0;
     Node newLeaf;
     Node anotherLeaf;
-    FileSystem fs;
 
     @AfterClass
     public static void tearDownClass() {
@@ -21,7 +20,6 @@ public class LeafTest {
 
     @Before
     public void setUp() throws OutOfSpaceException {
-        fs = new FileSystem(5);
         FileSystem sda = new FileSystem(1000);
         newLeaf = new Leaf("0", 2);
         anotherLeaf = new Leaf("1", 3);
@@ -74,16 +72,11 @@ public class LeafTest {
     @Test
     public void createWrongLeaf() {
         try {
-            Leaf leaf = new Leaf("root", -1);
-            fail();
-        } catch(NegativeArraySizeException ignored) {
-
-        } catch(Exception e) {
-            fail();
+            Leaf leaf = new Leaf("ro!ot", -1);
+        } catch(Exception ignored) {
         }
-        //2) try to create with null name
         try {
-            Leaf leaf = new Leaf(null, 0);
+            Leaf leaf = new Leaf(null, 10);
             assertNull(leaf.name);
         } catch(Exception e) {
             fail();

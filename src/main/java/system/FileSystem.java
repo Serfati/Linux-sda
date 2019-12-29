@@ -20,6 +20,7 @@ public class FileSystem {
      * Ctor - Initialise filesystem with empty root directory and \c m KB of space
      *
      * @param m Amount, in KB, of disk space to allocate
+     *
      */
     public FileSystem(int m) {
 
@@ -102,14 +103,13 @@ public class FileSystem {
     public void file(String[] name, int k) throws BadFileNameException, OutOfSpaceException {
 
         Tree workingTree = fileSystemTree;
-        String fileName = name[name.length-1];
+        String fileName = name[name.length - 1];
 
         if (name[0] != "root") {
 
             throw new BadFileNameException();
 
         }
-
 
         if (k > FileSystem.fileStorage.countFreeSpace()) { //not enough space free
 
@@ -151,7 +151,9 @@ public class FileSystem {
         Leaf newLeaf = new Leaf(fileName, k);
         newLeaf.parent = workingTree;
         newLeaf.depth = newLeaf.parent.depth+1;
+
         workingTree.children.put(fileName, newLeaf);
+
     }
 
     /**
@@ -243,13 +245,12 @@ public class FileSystem {
 
         }
 
-        return workingTree.children.get(name[name.length-1]);
+        return workingTree.children.get(name[name.length - 1]);
 
     }
 
     /**
      * Checks whether the specified file exists
-     *
      * @param name Path to the file
      * @return File if exists, \c null otherwise
      */
@@ -269,7 +270,6 @@ public class FileSystem {
 
     /**
      * Checks whether the specified directory exists
-     *
      * @param name Path to directory
      * @return Directory if exists, null otherwise
      */
@@ -287,4 +287,3 @@ public class FileSystem {
 
     }
 }
-
