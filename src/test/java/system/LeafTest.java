@@ -21,8 +21,8 @@ public class LeafTest {
     @Before
     public void setUp() throws OutOfSpaceException {
         FileSystem sda = new FileSystem(1000);
-        newLeaf = new Leaf("0", 2);
-        anotherLeaf = new Leaf("1", 3);
+        newLeaf = new Leaf("0", 5);
+        anotherLeaf = new Leaf("1", 7);
     }
 
     @After
@@ -63,21 +63,7 @@ public class LeafTest {
     @Test
     public void testAllocate() {
         try {
-            assertEquals(FileSystem.fileStorage.countFreeSpace(), 995);
-        } catch(Exception e) {
-            fail();
-        }
-    }
-
-    @Test
-    public void createWrongLeaf() {
-        try {
-            Leaf leaf = new Leaf("ro!ot", -1);
-        } catch(Exception ignored) {
-        }
-        try {
-            Leaf leaf = new Leaf(null, 10);
-            assertNull(leaf.name);
+            assertEquals(FileSystem.fileStorage.countFreeSpace(), 988);
         } catch(Exception e) {
             fail();
         }

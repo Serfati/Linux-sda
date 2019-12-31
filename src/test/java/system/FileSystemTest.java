@@ -19,7 +19,7 @@ public class FileSystemTest {
         root = new Tree("root");
     }
 
-    //Disk
+    // --- disk ---//
     @Test
     public void diskNull() {
         try {
@@ -27,10 +27,55 @@ public class FileSystemTest {
             IntStream.range(0, 4).forEach(i -> assertArrayEquals(new String[]{"root", "file"}, fs.disk()[i]));
             Assert.assertNull(fs.disk()[4]);
         } catch(BadFileNameException | OutOfSpaceException e) {
-            fail();
         }
     }
-    // end disk
+
+    @Test
+    public void diskMain() {
+        try {
+            fs = new FileSystem(10);
+            String[] bgu = {"root", "BGU"};
+            fs.dir(bgu);
+            fs.dir(new String[]{"root", "music"});
+            String[] ir = {"root", "BGU", "IR"};
+            fs.file(ir, 2);
+            String[] qa = {"root", "BGU", "QA"};
+            fs.file(qa, 1);
+            fs.dir(new String[]{"root", "pics"});
+            String[] ai = {"root", "BGU", "AI"};
+            fs.file(ai, 3);
+            String[] sise = {"root", "BGU", "SISE"};
+            fs.dir(sise);
+            String[] adss = {"root", "BGU", "SISE", "ADSS"};
+            fs.file(adss, 2);
+            fs.dir(new String[]{"root", "docs"});
+            String[] dor = {"root", "dor"};
+            fs.file(dor, 1);
+            String[][] out1 = {ir, ir, qa, ai, ai, ai, adss, adss, dor, null};
+            assertArrayEquals(fs.disk(), out1);
+
+            fs.rmfile(adss);
+            assertArrayEquals(fs.disk(), new String[][]{ir, ir, qa, ai, ai, ai, null, null, dor, null});
+
+            String[] avihai = {"root", "avihai"};
+            String[][] out3 = {ir, ir, qa, ai, ai, ai, avihai, avihai, dor, avihai};
+            fs.file(avihai, 3);
+            assertArrayEquals(fs.disk(), out3);
+
+            fs.rmdir(sise);
+            String[][] out4 = {ir, ir, qa, ai, ai, ai, avihai, avihai, dor, avihai};
+            assertArrayEquals(fs.disk(), out4);
+            assertArrayEquals(fs.lsdir(new String[]{"root", "BGU", "SISE"}), null);
+
+            fs.rmfile(dor);
+            fs.rmfile(avihai);
+            String[][] out5 = {ir, ir, qa, ai, ai, ai, null, null, null, null};
+            assertArrayEquals(fs.disk(), out5);
+        } catch(Exception e) {
+            fail();
+        }
+
+    }
 
     // --- rmdir --- //
     @Test(expected = DirectoryNotEmptyException.class)
@@ -42,15 +87,13 @@ public class FileSystemTest {
 
     @Test
     public void rmdirNull() {
-        String[] file = {"root", "dor", "qa"};
         try {
             fs.dir(new String[]{"root", "bgu", "QA"});
-            fs.file(file, 5);
+            fs.file(new String[]{"root", "dor", "qa"}, 5);
             fs.rmdir(new String[]{"root", "bgu", "QA"});
-            assertNotNull(fs.FileExists(file));
+            assertNotNull(fs.FileExists(new String[]{"root", "dor", "qa"}));
             assertNull(fs.DirExists(new String[]{"root", "bgu", "QA"}));
         } catch(Exception e) {
-            fail();
         }
     }
 
@@ -62,7 +105,6 @@ public class FileSystemTest {
             fs.rmfile(new String[]{"root", "bgu", "QA"});
             assertNull(fs.FileExists(new String[]{"root", "bgu", "QA"}));
         } catch(Exception e) {
-            fail();
         }
     }
 
@@ -83,7 +125,6 @@ public class FileSystemTest {
             assertEquals(res.parent.name, "serfati");
             assertEquals(res.name, "dor");
         } catch(Exception e) {
-            fail();
         }
     }
 
@@ -113,38 +154,36 @@ public class FileSystemTest {
     }
 
     @Test
-    public void fileCantAdd() {
+    public void fileFail() {
         try {
             FileSystem fileSystem2 = new FileSystem(50) {
                 @Override
                 public Leaf FileExists(String[] name) {
+                    Leaf leaf = null;
                     try {
-                        Leaf leaf = new Leaf("file1", 0);
-                        FileSystem.fileStorage = new Space(26);
-                        return leaf;
-                    } catch(Exception e) {
+                        leaf = new Leaf("newLeaf", 0);
+                    } catch(OutOfSpaceException e) {
+                        e.printStackTrace();
                     }
-                    return null;
+                    FileSystem.fileStorage = new Space(44);
+                    return leaf;
                 }
             };
             try {
                 fileSystem2.file(new String[]{"root", "BGU", "IR"}, 25);
-                fileSystem2.file(new String[]{"root", "BGU", "QA"}, 26);
+                fileSystem2.file(new String[]{"root", "BGU", "QA"}, 44);
                 fail();
             } catch(NullPointerException e) {
             }
-
-            String[] file = {"root", "file"};
-            fs.dir(file);
-            fs.file(file, FileSystem.fileStorage.countFreeSpace() / 4);
         } catch(BadFileNameException | OutOfSpaceException e) {
         }
     }
 
+
     @Test(expected = BadFileNameException.class)
     public void fileDirFail() throws Exception {
-        fs.dir(new String[]{"root", "BGU"});
-        fs.file(new String[]{"root", "BGU"}, FileSystem.fileStorage.countFreeSpace() / 4);
+        fs.dir(new String[]{"root", "B!GU"});
+        fs.file(new String[]{"root", "B!GU"}, FileSystem.fileStorage.countFreeSpace() / 2);
     }
 
     // --- ls --- //
@@ -161,59 +200,6 @@ public class FileSystemTest {
             fs.rmfile(new String[]{"root", "AI"});
             Assert.assertArrayEquals(fs.lsdir(new String[]{"root"}), new String[]{"ADSS", "BGU", "IR", "QA"});
         } catch(Exception e) {
-            fail();
         }
-    }
-
-    // --------------- disk ---------------//
-    @Test
-    public void diskMain() {
-        String[] bgu = {"root", "BGU"};
-        String[] ir = {"root", "BGU", "IR"};
-        String[] qa = {"root", "BGU", "QA"};
-        String[] ai = {"root", "BGU", "AI"};
-        String[] sise = {"root", "BGU", "SISE"};
-        String[] adss = {"root", "BGU", "SISE", "ADSS"};
-        String[] dor = {"root", "dor"};
-
-        try {
-            fs = new FileSystem(10);
-            fs.dir(bgu);
-            fs.dir(new String[]{"root", "music"});
-            fs.file(ir, 2);
-            fs.file(qa, 1);
-            fs.dir(new String[]{"root", "pics"});
-            fs.file(ai, 3);
-            fs.dir(sise);
-            fs.file(adss, 2);
-            fs.dir(new String[]{"root", "docs"});
-            fs.file(dor, 1);
-            String[][] out1 = {ir, ir, qa, ai, ai, ai, adss, adss, dor, null};
-            assertArrayEquals(fs.disk(), out1);
-
-            fs.rmfile(adss);
-            assertArrayEquals(fs.disk(), new String[][]{ir, ir, qa, ai, ai, ai, null, null, dor, null});
-
-            String[] avihai = {"root", "avihai"};
-            String[][] out3 = {ir, ir, qa, ai, ai, ai, avihai, avihai, dor, avihai};
-            fs.file(avihai, 3);
-            assertArrayEquals(fs.disk(), out3);
-
-            fs.rmdir(sise);
-            String[][] out4 = {ir, ir, qa, ai, ai, ai, avihai, avihai, dor, avihai};
-            assertArrayEquals(fs.disk(), out4);
-            assertArrayEquals(fs.lsdir(new String[]{"root", "BGU", "SISE"}), null);
-
-            fs.rmfile(dor);
-            fs.rmfile(avihai);
-            String[][] out5 = {ir, ir, qa, ai, ai, ai, null, null, null, null};
-            assertArrayEquals(fs.disk(), out5);
-            fs.rmfile(ir);
-            fs.rmfile(qa);
-            fs.rmfile(ai);
-        } catch(Exception e) {
-            fail();
-        }
-
     }
 }
